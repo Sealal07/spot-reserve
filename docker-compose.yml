@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:15
+    container_name: spot_reserve_db
+    restart: always
+    environment:
+    POSTGRES_USER: postgresql
+    POSTGRES_PASSWORD: 1234
+    POSTGRES_DB: spotreserve_db
+    ports:
+    -"5432:5432"
+  
+  backend:
+    build:
+      container_name: spot_reserve_api
+      volumes:
+        -../app
+      ports:
+        -"8000:8000"
+      environment:
+        -DATABASE_URL=postgresql://postgres:1234@db:5432/spotreserve_db
+      depends_on:
+        -db
