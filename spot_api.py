@@ -20,13 +20,15 @@ create_db()
 
 class UserCreate(BaseModel):
     username: str
+    email: str
     password: str
+    role: str
 
 
-@app.post('/user_register')
+@app.post('/auth/register')
 def user_register(user: UserCreate, db: Session = Depends(get_db)):
     '''Регистрация пользователя'''
-    db_user = db.query(User).filter(User.username == user.username).first()
+    db_user = db.query(User).filter(User.email == user.email).first()
     if db_user:
         raise HTTPException(
             status_code=400,
@@ -34,22 +36,23 @@ def user_register(user: UserCreate, db: Session = Depends(get_db)):
         )
     new_user = User(
         username=user.username,
-        hashed_password=get_password_hash(user.password)
+        email=user.email,
+        hashed_password=get_password_hash(user.password),
+        role=user.role
     )
     db.add(new_user)
     db.commit()
     return {'message': 'Пользователь создан!'}
 
 
-@app.post('/token')
-def login(form_data: OAuth2PasswordRequestForm = Depends()):
+@app.post('/auth/token')
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     '''Авторизация пользователя'''
-    db: Session = Depends(get_db)
-    user = db.query(User).filter(User.username == form_data.username).first()
+    user = db.query(User).filter(User.email == form_data.email).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=400,
-            detail='Неверный пользователь и пароль!'
+            detail='Неверный пользователь или пароль!'
         )
     access_token = create_access_token(data={'sub': user.username})
     return {'access_token': access_token, 'token_type': 'bearer'}
