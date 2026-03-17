@@ -14,7 +14,7 @@ function AuthForm() {
         <input 
             type="text" 
             value={username} 
-            onChange={(e) => setEmail(e.target.value)} 
+            onChange={(e) => setUsername(e.target.value)} 
             placeholder="Логин" 
         />
 

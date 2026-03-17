@@ -3,7 +3,8 @@ import React, { useState } from "react";
 function RegisterForm() {
     const [username, setUsername]  = useState('');
     const [email, setEmail] = useState('');
-    const  [password, setPassword] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
 
     const handleSubmit = (e) => {
@@ -38,8 +39,8 @@ function RegisterForm() {
 
         <input 
             type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
+            value={confirmPassword} 
+            onChange={(e) => setConfirmPassword(e.target.value)} 
             placeholder="Подтвердите пароль" 
         />
 
