@@ -6,11 +6,15 @@ export const TableCard = ({spot}) => {
   return (
     <>
     <CCard style={{ width: '18rem' }}>
-      {/* <CCardImage orientation="top" alt='photo' /> */}
       <CCardBody>
         <CCardTitle>Стол №{spot.number}</CCardTitle>
         <CCardText>{spot.description}</CCardText>
-        <CButton color="primary" href="#">{spot.isActive? "Забронировать": "Место занято"}</CButton>
+        {/* <CButton color="primary" href="#">{spot.isActive? "Забронировать": "Место занято"}</CButton> */}
+        <CButton 
+        disabled={!spot.isActive}>
+          {spot.isActive ? "Забронировать": "Место занято"}
+        </CButton>
+
       </CCardBody>
     </CCard>
     </>
