@@ -4,6 +4,8 @@ import TableCard from "./TableCard";
 
 function CalendarPage() {
 
+    const [selectedDate, setSelectedDate] = useState(new Date);
+
     const mockData = [
         {
             id: 1,
@@ -28,7 +30,10 @@ function CalendarPage() {
     return (
         <>
             {mockData.map(spot => <TableCard key={spot.id} spot={spot} />)}
-        {/* <Calendar></Calendar> */}
+        <Calendar 
+        onChange={setSelectedDate}
+        value={selectedDate}
+        />
         </>
     )
     
