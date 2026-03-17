@@ -13,7 +13,7 @@ function AuthForm() {
     <form onSubmit={handleSubmit}>
         <input 
             type="text" 
-            value={email} 
+            value={username} 
             onChange={(e) => setEmail(e.target.value)} 
             placeholder="Логин" 
         />

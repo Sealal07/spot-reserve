@@ -3,6 +3,7 @@ import NavBar from './components/NavBar';
 import AuthForm from './components/Auth-form';
 import RegisterForm from './components/Register-form';
 import CalendarPage from './components/CalendarPage';
+import TableCard from "./components/TableCard";
 
 function App() {
   return (
