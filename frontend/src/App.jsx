@@ -8,12 +8,15 @@ function App() {
   return (
     <BrowserRouter>
       <NavBar />
-      <Routes>
-        <Route path="/login" element={<AuthForm />} />
-        <Route path="/register" element={<RegisterForm />} />
-        <Route path="/calendar" element={<CalendarPage />} />
-      </Routes>
+      <main>
+        <Routes>
+          <Route path="/login" element={<AuthForm />} />
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/calendar" element={<CalendarPage />} />
+        </Routes>
+      </main>
     </BrowserRouter>
   );
 }
-export default App
+
+export default App;
