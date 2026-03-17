@@ -1,50 +1,27 @@
-import React, { useState } from "react";
-import { BrowserRouter, Routes, Route, Link } from "react-router";
-import AuthForm from "./Auth-form";
-import RegisterForm from "./Register-form";
+import React from "react";
+import { Link } from "react-router";
 
-
-function NavBar() {
-  
-
-
-
+tion NavBar() {
   return (
-
-
-
-<>
-
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<AuthForm />} />
-        <Route path="/login" element={<AuthForm />} />
-        <Route path="/register" element={<RegisterForm />} />
-      </Routes>
-   </BrowserRouter>
-
-
-
-
-<Link to="/login">Войти</Link>;
-<Link to="/register">Зарегистрироваться</Link>;
-
-</>
-
-
-
-   
-
-
-
-
-
+    <nav>
+      <div>
+        <Link to="/"><strong>SpotReserve</strong></Link>
+      </div>
+      
+      <ul>
+        <li>
+          <Link to="/calendar">Календарь</Link>
+        </li>
+        <li>
+          <Link to="/login">Войти</Link>
+        </li>
+        <li>
+          <Link to="/register">Регистрация</Link>
+        </li>
+      </ul>
+    </nav>
   );
-
-
-
 }
-export default NavBar
 
 
-
+export default NavBar;
