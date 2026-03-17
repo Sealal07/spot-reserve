@@ -1,17 +1,19 @@
-import { useState } from 'react'
-import AuthForm from './components/Auth-form'
-import RegisterForm from './components/Register-form'
-import Calendar from 'react-calendar'
-import CardExample from './components/TableCard'
-import NavBar from './components/NavBar'
+import { BrowserRouter, Routes, Route } from "react-router";
+import NavBar from './components/NavBar';
+import AuthForm from './components/Auth-form';
+import RegisterForm from './components/Register-form';
+import CalendarPage from './components/CalendarPage';
+
 function App() {
-
   return (
-    <>
-    <NavBar></NavBar>
-
-    </>
-  )
-};
-
+    <BrowserRouter>
+      <NavBar />
+      <Routes>
+        <Route path="/login" element={<AuthForm />} />
+        <Route path="/register" element={<RegisterForm />} />
+        <Route path="/calendar" element={<CalendarPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
 export default App
