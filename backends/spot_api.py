@@ -41,11 +41,11 @@ def user_register(user: UserCreate, db: Session = Depends(get_db)):
 @router.post('/auth/token')
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     '''Авторизация пользователя'''
-    user = db.query(User).filter(User.email == form_data.login).first()
+    user = db.query(User).filter(User.email == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=400,
             detail='Неверный пользователь или пароль!'
         )
-    access_token = create_access_token(data={'sub': user.login})
+    access_token = create_access_token(data={'sub': user.username})
     return {'access_token': access_token, 'token_type': 'bearer'}
