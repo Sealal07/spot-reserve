@@ -13,8 +13,9 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(30), unique=True)
     hash_password: Mapped[str] = mapped_column(String)
     role: Mapped[str] = mapped_column(String(20))
-    # один ко многим (Booking.user_id)
-    booking_list: Mapped[List['Booking']] = relationship('Booking', back_populates='users_bookingr')
+    # Исправлено: связь один ко многим. Назвала переменную 'bookings' вместо 'booking_list'
+    # back_populates теперь указывает на переменную 'user' в классе Booking.
+    bookings: Mapped[List['Booking']] = relationship('Booking', back_populates='user')
 
 class Spot(Base):
     __tablename__ = 'spots'
