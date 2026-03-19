@@ -33,7 +33,7 @@ def create_booking(
         booking_data: BookingCreate,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)):
-    """cоздание брони с проверкой доступности по времени"""
+    """создание брони с проверкой доступности по времени"""
 
     # проверяем, существует ли стол и активен ли он
     spot = db.query(Spot).filter(Spot.id == booking_data.spot_id, Spot.is_active == True).first()
