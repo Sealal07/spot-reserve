@@ -15,6 +15,7 @@ function RegisterForm() {
 
         if (password !== confirmPassword) {
             alert("Пароли не совпадают!");
+            return;
         }
 
         try {
