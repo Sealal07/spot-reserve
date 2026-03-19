@@ -18,20 +18,25 @@ class User(Base):
 
 class Spot(Base):
     __tablename__ = 'spots'
+    
     id: Mapped[int] = mapped_column(primary_key=True)
     number: Mapped[int] = mapped_column(Integer, unique=True)
-    description: Mapped[str] = mapped_column(String(1000))
-    # один ко многим(Booking.spot_id)
-    spot_list: Mapped[List['Booking']] = relationship('Booking', back_populates='spot') # spot_list подумать над названием
+    description: Mapped[Optional[str]] = mapped_column(String(1000))
     is_active: Mapped[bool] = mapped_column(default=True)
-
+    
+    #  заменила 'spot_list' на  'bookings'.
+    bookings: Mapped[List['Booking']] = relationship('Booking', back_populates='spot')
 
 class Booking(Base):
     __tablename__ = 'bookings'
+    
     id: Mapped[int] = mapped_column(primary_key=True)
-    # users.id
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
-    # spots.id
     spot_id: Mapped[int] = mapped_column(ForeignKey('spots.id', ondelete='CASCADE'))
     start_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     end_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+    # ДОБАВЛЕНО
+    # чтобы связать Foreign Keys с объектами User и Spot
+    user: Mapped['User'] = relationship('User', back_populates='bookings')
+    spot: Mapped['Spot'] = relationship('Spot', back_populates='bookings')
