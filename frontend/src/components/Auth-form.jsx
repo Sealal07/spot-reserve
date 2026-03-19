@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { authToken } from "../api";
+import { authToken, getUsers } from "../api";
 
 function AuthForm() {
     const [username, setUsername]  = useState('');
@@ -20,7 +20,9 @@ function AuthForm() {
             });
             if (response.access_token) {
                 localStorage.setItem("token", response.access_token)
+                handleAuth()
             }
+
             
         } catch (error) {
 
@@ -30,6 +32,15 @@ function AuthForm() {
 
 
     };
+
+    const handleAuth = async (e) => {
+
+        const response = await getUsers()
+
+        if (response) {
+            localStorage.setItem("role", response.role)
+        }
+    }
 
     return (
     <form onSubmit={handleSubmit}>
