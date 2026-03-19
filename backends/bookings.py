@@ -91,14 +91,13 @@ def get_all_bookings_for_admin(db: Session = Depends(get_db), current_user: User
             status_code=status.HTTP_403_FORBIDDEN,
             detail='Только администратор может просмотреть все брони'
         )
-    else:
-        all_bookings = db.query(Booking).all()
-        if not all_bookings:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail='Брони отсутствуют'
-            )
-        return all_bookings
+    all_bookings = db.query(Booking).all()
+    if not all_bookings:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Брони отсутствуют'
+        )
+    return all_bookings
 
 
 @router.delete('/{id}')

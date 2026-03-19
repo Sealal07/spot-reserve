@@ -20,15 +20,14 @@ def create_spot(db: Session = Depends(get_db), current_user: User = Depends(get_
             status_code=403,
             detail='Только администратор может добавлять столы!'
         )
-    else:
-        new_spot = Spot(
-            number=number,
-            description=description
+    new_spot = Spot(
+        number=number,
+        description=description
 
-        )
-        db.add(new_spot)
-        db.commit()
-        return {'Message': 'Стол успешно создан!'}
+    )
+    db.add(new_spot)
+    db.commit()
+    return {'Message': 'Стол успешно создан!'}
 
 
 @router.post('/spots/{id}')
@@ -40,8 +39,8 @@ def delete_spot(spot_id: int, db: Session = Depends(get_db), current_user: User 
             status_code=403,
             detail='Только администратор может удалять столы!'
         )
-    else:
-        del_spot = db.query(Spot).filter(Spot.id == spot_id).first()
-        db.delete(del_spot)
-        db.commit()
-        return {'Message': 'Стол успешно удален!'}
+
+    del_spot = db.query(Spot).filter(Spot.id == spot_id).first()
+    db.delete(del_spot)
+    db.commit()
+    return {'Message': 'Стол успешно удален!'}

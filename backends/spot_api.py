@@ -1,19 +1,12 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from database import User, create_db, get_db
-from starlette.middleware.cors import CORSMiddleware
 from auth import get_password_hash, verify_password, create_access_token
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter
 
-app = FastAPI(title='Spot Reserve API')
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=['*'],
-    allow_methods=['*'],
-    allow_headers=['*'],
-)
+router = APIRouter()
 
 create_db()
 
@@ -25,7 +18,7 @@ class UserCreate(BaseModel):
     role: str
 
 
-@app.post('/auth/register')
+@router.post('/auth/register')
 def user_register(user: UserCreate, db: Session = Depends(get_db)):
     '''Регистрация пользователя'''
     db_user = db.query(User).filter(User.email == user.login).first()
@@ -45,7 +38,7 @@ def user_register(user: UserCreate, db: Session = Depends(get_db)):
     return {'message': 'Пользователь создан!'}
 
 
-@app.post('/auth/token')
+@router.post('/auth/token')
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     '''Авторизация пользователя'''
     user = db.query(User).filter(User.email == form_data.login).first()
