@@ -1,12 +1,34 @@
 import React, { useState } from "react";
+import { authToken } from "../api";
 
 function AuthForm() {
     const [username, setUsername]  = useState('');
     const  [password, setPassword] = useState('');
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+
+        try {
+
+
+
+            const response = await authToken({
+                username: username,
+                password: password
+            });
+            if (response.access_token) {
+                localStorage.setItem("token", response.access_token)
+            }
+            
+        } catch (error) {
+
+            alert("Ошибка при авторизации!")
+            
+        }
+
+
     };
 
     return (

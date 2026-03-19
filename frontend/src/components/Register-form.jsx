@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { authRegister } from "../api";
 
 function RegisterForm() {
     const [username, setUsername]  = useState('');
@@ -7,8 +8,38 @@ function RegisterForm() {
     const [confirmPassword, setConfirmPassword] = useState('');
 
 
-    const handleSubmit = (e) => {
+
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (password !== confirmPassword) {
+            alert("Пароли не совпадают!");
+        }
+
+        try {
+            const registerData = {
+                username: username,
+                email: email,
+                password: password
+            };
+
+            const response = await authRegister(registerData);
+            if (response) {
+
+                alert("Регистрация успешна!")
+
+            }
+            setUsername('');
+            setEmail('');
+            setPassword('');
+            setConfirmPassword('');
+            
+        } catch (error) {
+
+            alert("Ошибка: Неверные данные");
+            
+        };
     };
 
     return (
