@@ -3,6 +3,14 @@ const API_URL = "http://127.0.0.1:8000/";
 const API_URL_BOOKING = `${API_URL}bookings/`;
 
 
+//функция для добавления токена авторизации
+const getHeaders = () => {
+    const token = localStorage.getItem("token"); // Берем токен из памяти браузера
+    return {
+        "Content-Type": "application/json",
+        ...(token ? { "Authorization": `Bearer ${token}` } : {})
+    };
+};
 
 // SPOTS
 // /spots GET
@@ -15,15 +23,18 @@ export const getSpots = async () => {
 export const addSpot = async (spotData) => {
     const response = await fetch(`${API_URL}spots/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getHeaders(), // Добавила авторизацию
         body: JSON.stringify(spotData),
     });
     return response.json();
 };
 
 // /spots/{id} DELETE
-export const delelteSpot = async (id) => {
-    await fetch(`${API_URL}spots/${id}/`, {method:"DELETE"});
+export const deleteSpot = async (id) => { // Исправила опечатку
+    await fetch(`${API_URL}spots/${id}/`, {
+        method: "DELETE",
+        headers: getHeaders() // Добавила авторизацию
+    });
 };
 
 
@@ -32,7 +43,7 @@ export const delelteSpot = async (id) => {
 export const authRegister = async (authData) => {
     const response = await fetch(`${API_URL}auth/register/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" }, 
         body: JSON.stringify(authData),
     });
     return response.json();
@@ -54,28 +65,32 @@ export const authToken = async (authData) => {
 export const createBooking = async (bookingData) => {
     const response = await fetch(`${API_URL_BOOKING}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(authData),
+        headers: getHeaders(), // Добавила авторизацию
+        body: JSON.stringify(bookingData), // Исправила authData на bookingData
     });
     return response.json();
 };
 
 // /bookings/my GET
 export const getMyBookings = async () => {
-    const response = await fetch(`${API_URL_BOOKING}my/`);
+    const response = await fetch(`${API_URL_BOOKING}my/`, {
+        headers: getHeaders() // Добавила авторизацию
+    });
     return response.json();
 };
 
 // /bookings GET
 export const getBookings = async () => {
-    const response = await fetch(`${API_URL_BOOKING}`);
-    return response.json();
+    const response = await fetch(`${API_URL_BOOKING}`, {
+        headers: getHeaders() // Добавила авторизацию
+    });return response.json();
 };
 
 // /bookings/{id} DELETE
 export const deleteBookings = async (id) => {
-    const response = await fetch(`${API_URL_BOOKING}${id}/`,{
-        method: "DELETE"
+    await fetch(`${API_URL_BOOKING}${id}/`, {
+        method: "DELETE",
+        headers: getHeaders() // Добавила авторизацию
     });
 };
 
@@ -83,7 +98,9 @@ export const deleteBookings = async (id) => {
 
 // /users/me GET
 export const  getUsers = async () => {
-    const response = await fetch(`${API_URL}users/me/`)
+    const response = await fetch(`${API_URL}users/me/`, {
+        headers: getHeaders() // Добавила авторизацию
+    });
     return response.json();
 }
 
