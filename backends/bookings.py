@@ -73,7 +73,7 @@ def create_booking(
 @router.get('/my')
 def get_my_bookings(user_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     '''Список своих текущих и прошедших бронирований'''
-    my_reservations = db.query(Booking).filter(Booking.id == user_id).all()
+    my_reservations = db.query(Booking).filter(Booking.user_id == current_user.id).all()
     if current_user:
         if not my_reservations:
             raise HTTPException(
