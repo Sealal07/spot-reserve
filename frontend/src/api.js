@@ -1,109 +1,92 @@
-
 const API_URL = "http://127.0.0.1:8000/";
 const API_URL_BOOKING = `${API_URL}bookings/`;
 
-
-//функция для добавления токена авторизации
 const getHeaders = () => {
-    const token = localStorage.getItem("token"); // Берем токен из памяти браузера
+    const token = localStorage.getItem("token");
     return {
         "Content-Type": "application/json",
         ...(token ? { "Authorization": `Bearer ${token}` } : {})
     };
 };
 
-// SPOTS
-// /spots GET
 export const getSpots = async () => {
     const response = await fetch(`${API_URL}spots/`);
     return response.json();
 };
 
-// /spots POST
 export const addSpot = async (spotData) => {
     const response = await fetch(`${API_URL}spots/`, {
         method: "POST",
-        headers: getHeaders(), // Добавила авторизацию
+        headers: getHeaders(),
         body: JSON.stringify(spotData),
     });
     return response.json();
 };
 
-// /spots/{id} DELETE
-export const deleteSpot = async (id) => { // Исправила опечатку
+export const deleteSpot = async (id) => {
     await fetch(`${API_URL}spots/${id}/`, {
         method: "DELETE",
-        headers: getHeaders() // Добавила авторизацию
+        headers: getHeaders()
     });
 };
 
-
-// AUTH
-// /auth/register POST
+// исправлено: регистрация теперь отправляет роль по умолчанию, как ждет бэкенд
 export const authRegister = async (authData) => {
-    const response = await fetch(`${API_URL}auth/register/`, {
+    const response = await fetch(`${API_URL}auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" }, 
-        body: JSON.stringify(authData),
+        body: JSON.stringify({ ...authData, role: "user" }),
     });
     return response.json();
 };
 
-// /auth/token POST
+// исправлено: передаем данные в формате Form Data для FastAPI OAuth2
 export const authToken = async (authData) => {
-    const response = await fetch(`${API_URL}auth/token/`, {
+    const formData = new URLSearchParams();
+    formData.append('username', authData.username); // в FastAPI username это email
+    formData.append('password', authData.password);
+
+    const response = await fetch(`${API_URL}auth/token`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(authData),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData,
     });
     return response.json();
 };
 
-// BOOKING
-
-// /bookings POST
 export const createBooking = async (bookingData) => {
     const response = await fetch(`${API_URL_BOOKING}`, {
         method: "POST",
-        headers: getHeaders(), // Добавила авторизацию
-        body: JSON.stringify(bookingData), // Исправила authData на bookingData
+        headers: getHeaders(),
+        body: JSON.stringify(bookingData),
     });
     return response.json();
 };
 
-// /bookings/my GET
 export const getMyBookings = async () => {
-    const response = await fetch(`${API_URL_BOOKING}my/`, {
-        headers: getHeaders() // Добавила авторизацию
+    const response = await fetch(`${API_URL_BOOKING}my`, { // убран лишний слеш для соответствия роуту
+        headers: getHeaders()
     });
     return response.json();
 };
 
-// /bookings GET
 export const getBookings = async () => {
     const response = await fetch(`${API_URL_BOOKING}`, {
-        headers: getHeaders() // Добавила авторизацию
-    });return response.json();
+        headers: getHeaders()
+    });
+    return response.json();
 };
 
-// /bookings/{id} DELETE
 export const deleteBookings = async (id) => {
-    await fetch(`${API_URL_BOOKING}${id}/`, {
+    await fetch(`${API_URL_BOOKING}${id}`, {
         method: "DELETE",
-        headers: getHeaders() // Добавила авторизацию
+        headers: getHeaders()
     });
 };
 
-// USERS
-
-// /users/me GET
-export const  getUsers = async () => {
-    const response = await fetch(`${API_URL}users/me/`, {
-        headers: getHeaders() // Добавила авторизацию
+export const getUsers = async () => {
+    const response = await fetch(`${API_URL}users/me`, {
+        headers: getHeaders()
     });
     return response.json();
 }
-
-
-
-
