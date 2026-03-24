@@ -12,8 +12,6 @@ engine = create_engine(DATABASE_URL)
 def init_db():
     Base.metadata.create_all(bind=engine)
 
-# создаю сессию с бд?
-# db = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # простое добавление юзера
 def db_seed():
@@ -26,11 +24,3 @@ def db_seed():
         )
         session.add(person_one)
         session.commit()
-
-def db_simple_select():
-    session = Session(engine)
-    stmt = select(User)
-
-    print(session.scalars(stmt))
-
-db_simple_select()
