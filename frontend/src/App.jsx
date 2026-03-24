@@ -4,6 +4,7 @@ import AuthForm from './components/Auth-form';
 import RegisterForm from './components/Register-form';
 import CalendarPage from './components/CalendarPage';
 import TableCard from "./components/TableCard";
+import { MyAccount } from "./components/MyAccount";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/login" element={<AuthForm />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/my" element={<MyAccount />}/>
         </Routes>
       </main>
     </BrowserRouter>

@@ -18,10 +18,15 @@ function NavBar() {
         <li>
           <Link to="/register">Регистрация</Link>
         </li>
+
+        <li>
+          <Link to="/my">Личный кабинет</Link>
+
+        </li>
       </ul>
     </nav>
   );
-}
+};
 
 
 export default NavBar;
