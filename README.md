@@ -53,8 +53,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 ## Быстрый запуск
 **Клонируйте репозиторий:**
-```Bashgit 
-clone [https://github.com/Sealal07/spot-reserve.git](https://github.com/Sealal07/spot-reserve.git)
+```Bash
+git clone [https://github.com/Sealal07/spot-reserve.git](https://github.com/Sealal07/spot-reserve.git)
 cd spot-reserve
 ```
 **Подготовьте среду:** Создайте файл `.env` на основе примера выше.
