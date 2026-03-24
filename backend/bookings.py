@@ -104,7 +104,7 @@ def get_all_bookings_for_admin(db: Session = Depends(get_db), current_user: User
 @router.delete('/{id}')
 def delete_booking(id:int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     '''Отмена брони для юзера и удаление брони для админа'''
-    if not current_user:
+    if current_user.role != 'admin' and booking.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail='Вы не можете отменить чужие брони'
