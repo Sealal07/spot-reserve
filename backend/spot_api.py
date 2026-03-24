@@ -22,7 +22,7 @@ class UserCreate(BaseModel):
 @router.post('/auth/register')
 def user_register(user: UserCreate, db: Session = Depends(get_db)):
     '''Регистрация пользователя'''
-    db_user = db.query(User).filter(User.email == user.login).first()
+    db_user = db.query(User).filter(User.login == user.login).first()
     if db_user:
         raise HTTPException(
             status_code=400,
