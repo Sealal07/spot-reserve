@@ -1,10 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import { getBookings, getSpots } from '../api';
+import { getBookings, getSpots, addSpot, deleteSpot } from '../api';
 
 export const AdminDashboard = () => {
     const [allBookings, setAllBookings] = useState([]);
     const [allSpots, setAllSpots] = useState([]);
     const [loading, setLoading] = useState(true);
+    // добавление стола
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const fetchSpot = async () => {
+            try {
+                const [message, spotValue] = await addSpot();
+                setAllSpots();
+                console.log("Стол успешно создан", spotValue);
+
+            }
+            catch (error) {
+                console.error(error) 
+            }
+
+                }
+        console.log("Форма обработана!");
+
+    };
+
+    const deleteBookingSubmit = (id) => {
+        const fetchDelete = async () => {
+            try {
+
+                const [message, bookingValue] = await  deleteSpot();
+                setAllSpots();
+                console.log("Стол успешно удален", bookingValue);
+
+            }
+            catch (error){
+                console.error(error)
+            }
+        }
+        
+    }
+    const handleConfirm = (id) => {
+        const choice = confirm("Вы уверены, что хотите удалить?")
+        if (choice) {
+            deleteBookingSubmit(id)
+        }
+        else {
+            return
+        }
+    }
 
     // исправлено: используем useEffect для загрузки данных при монтировании
     useEffect(() => {
@@ -48,9 +91,22 @@ export const AdminDashboard = () => {
                 {allSpots.map(spot => (
                     <div key={spot.id}>
                         Стол №{spot.number} — {spot.description}
+                        <div onClick={(e) => handleConfirm(id)}>🗑️</div>
                     </div>
                 ))}
             </div>
+
+{/* Форма добавить новый стол */}
+
+            <form onSubmit={handleSubmit}>
+
+                <input type="number" name='spotNumber' placeholder='Номер столика' />
+                <input type="text" name='description' placeholder='Описание столика'/>
+                <button type='submit'>Добавить столик</button>
+
+            </form>
+
+
         </div>
     );
 };
