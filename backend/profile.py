@@ -1,5 +1,5 @@
 from fastapi import Depends, APIRouter
-from database import User
+from models import User
 from auth import get_current_user
 
 router = APIRouter()
@@ -10,5 +10,6 @@ def my_profile(current_user: User = Depends(get_current_user)):
     return {
         'user_id': current_user.id,
             'login': current_user.login,
-            'email': current_user.email
+            'email': current_user.email,
+            'role': current_user.role
         }

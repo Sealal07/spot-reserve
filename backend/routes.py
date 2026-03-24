@@ -1,6 +1,6 @@
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
-from database import User, Spot, get_db
+from models import User, Spot, get_db
 from auth import get_current_user
 
 router = APIRouter()

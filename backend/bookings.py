@@ -4,7 +4,8 @@ from sqlalchemy import and_
 from datetime import datetime
 from pydantic import BaseModel
 
-from database import User, Spot, Booking, get_db
+from models import User, Spot, Booking
+from engine import  get_db
 from auth import get_current_user
 
 router = APIRouter(prefix="/bookings", tags=["Bookings"])  # перенесла сюда /bookings
