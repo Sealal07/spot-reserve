@@ -27,7 +27,7 @@ def db_seed():
         person_one = User(
             login='login_person_one',
             email='person_one@mail.com',
-            hash_password='1234',
+            hashed_password='1234',
             role='customer'
         )
         session.add(person_one)
