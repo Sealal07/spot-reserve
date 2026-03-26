@@ -46,7 +46,7 @@ function RegisterForm() {
 
     return (
 
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="border border-cyan-600 rounded-2xl p-5 flex flex-col gap-4 text-xl">
 
         <input 
             type="text" 
@@ -77,7 +77,7 @@ function RegisterForm() {
             placeholder="Подтвердите пароль" 
         />
 
-        <button type="submit">Зарегистрироваться</button>
+        <button type="submit" className="border text-amber-50 p-2 rounded-xl bg-linear-to-t from-sky-500 to-indigo-500">Зарегистрироваться</button>
     </form>
 
     )

@@ -20,10 +20,10 @@ function NavBar() {
   };
 
   return (
-    <nav style={{ display: 'flex', gap: '20px', padding: '10px'}}>
+    <nav className="flex w-full justify-between mx-20 items-center">
       <Link to="/"><strong>SpotReserve</strong></Link>
 
-      <ul style={{ display: 'flex', listStyle: 'none', gap: '15px' }}>
+      <ul className="flex gap-20">
         {isAuth ? (
           <>
             <li><Link to="/calendar">Календарь</Link></li>
