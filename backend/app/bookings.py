@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from datetime import datetime, timedelta
 from pydantic import BaseModel
-from models import User, Spot, Booking
-from engine import  get_db
-from auth import get_current_user
+from .models import User, Spot, Booking
+from .engine import  get_db
+from .auth import get_current_user
 
 router = APIRouter(prefix="/bookings", tags=["Bookings"])  # перенесла сюда /bookings
 

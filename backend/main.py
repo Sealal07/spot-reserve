@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-import bookings, profile, routes, spot_api
+from app import bookings, profile, routes, spot_api
+from app.engine import create_tables
+
+# Создаем таблицы при запуске
+create_tables()
 
 app = FastAPI(title='Spot Reserve API')
 

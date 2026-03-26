@@ -1,9 +1,9 @@
 from sqlite3 import IntegrityError
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session, session
-from models import User, Spot
-from engine import get_db
-from auth import get_current_user
+from .models import User, Spot
+from .engine import get_db
+from .auth import get_current_user
 
 router = APIRouter()
 
