@@ -10,13 +10,16 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-
-
 class UserCreate(BaseModel):
     login: str
     email: str
     password: str
     role: str
+
+
+class ResponseMessage(BaseModel):
+    error: int
+    message: str
 
 
 @router.post('/auth/register')
@@ -36,6 +39,9 @@ def user_register(user: UserCreate, db: Session = Depends(get_db)):
     )
     db.add(new_user)
     db.commit()
+    message = ResponseMessage(error=200, message='Пользователь успешно создан!')
+    return message
+
     return {'message': 'Пользователь создан!'}
 
 

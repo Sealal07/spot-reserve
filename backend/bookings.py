@@ -4,7 +4,7 @@ from sqlalchemy import and_
 from datetime import datetime, timedelta
 from pydantic import BaseModel
 from .models import User, Spot, Booking
-from .engine import  get_db
+from .engine import get_db
 from .auth import get_current_user
 
 router = APIRouter(prefix="/bookings", tags=["Bookings"])  # перенесла сюда /bookings
@@ -26,6 +26,11 @@ class BookingResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class ResponseMessage(BaseModel):
+    error: int
+    message: str
 
 
 @router.post("/", response_model=BookingResponse)
@@ -85,8 +90,9 @@ def create_booking(
         return new_booking
 
     except HTTPException as e:
-        return {'Message': f'Error: {e}'}
-
+        message = ResponseMessage(error=400, message=f'Ошибка: {e}')
+        return message
+        # return f'Error: {e}'
 
 
 @router.get('/my')
@@ -101,6 +107,7 @@ def get_my_bookings(user_id: int, db: Session = Depends(get_db), current_user: U
             )
 
     return my_reservations
+
 
 @router.get("/")
 def get_all_bookings_for_admin(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -120,7 +127,7 @@ def get_all_bookings_for_admin(db: Session = Depends(get_db), current_user: User
 
 
 @router.delete('/{id}')
-def delete_booking(id:int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def delete_booking(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     '''Отмена брони для юзера и удаление брони для админа'''
     del_booking = db.query(Booking).filter(Booking.id == id)
     if not del_booking:
@@ -134,12 +141,11 @@ def delete_booking(id:int, db: Session = Depends(get_db), current_user: User = D
     if current_user.role == 'admin' or Booking.user_id == current_user.id:
         db.query(Booking).filter(Booking.id == id).delete()
         db.commit()
-        return {'message': 'Успешно удалено'}
+        message = ResponseMessage(error=200, message='Бронирование успешно удалено!')
+        return message
+
+        # return {'message': 'Успешно удалено'}
 
     # db.query(Booking).filter(Booking.user_id == current_user.id, Booking.id == id).delete()
     # db.commit()
     # return {'message': 'Успешно удалено'}
-
-
-
-
