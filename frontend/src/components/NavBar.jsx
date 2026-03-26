@@ -1,57 +1,46 @@
-import {React, useState, useEffect} from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 function NavBar() {
   const [isAuth, setIsAuth] = useState(false);
+  const role = localStorage.getItem("role");
+  const navigate = useNavigate();
 
+  // следим за наличием токена
   useEffect(() => {
-    const token = localStorage.getItem("token")
-    if (token) {
-      setIsAuth(true);
-    }
-  },[])
-  
-  useEffect(() => {
-    localStorage.removeItem('token');
+    const token = localStorage.getItem("token");
+    setIsAuth(!!token);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
     setIsAuth(false);
-  }, [])
+    navigate("/login");
+  };
 
   return (
-    <nav>
-      <div>
-        <Link to="/"><strong>SpotReserve</strong></Link>
-      </div>
-      
-      <ul>
+    <nav style={{ display: 'flex', gap: '20px', padding: '10px'}}>
+      <Link to="/"><strong>SpotReserve</strong></Link>
+
+      <ul style={{ display: 'flex', listStyle: 'none', gap: '15px' }}>
         {isAuth ? (
           <>
-        <li>
-          <Link to="/calendar">Календарь</Link>
-        </li>
-        <li>
-          <Link to="/my">Личный кабинет</Link>
-        </li>
-        <li>
-          <Link to="/logout">Выйти</Link>
-        </li>
+            <li><Link to="/calendar">Календарь</Link></li>
+            <li><Link to="/my">Личный кабинет</Link></li>
+            {/* показываем админку только если роль admin */}
+            {role === 'admin' && <li><Link to="/admin">Админ-панель</Link></li>}
+            <li><button onClick={handleLogout}>Выйти</button></li>
           </>
-
-        ) :
-        (
+        ) : (
           <>
-        <li>
-          <Link to="/login">Войти</Link>
-        </li>
-        <li>
-          <Link to="/register">Регистрация</Link>
-        </li>
+            <li><Link to="/login">Войти</Link></li>
+            <li><Link to="/register">Регистрация</Link></li>
           </>
         )}
-
       </ul>
     </nav>
   );
-};
-
+}
 
 export default NavBar;
