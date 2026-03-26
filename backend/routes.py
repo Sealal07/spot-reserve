@@ -1,9 +1,9 @@
 from sqlite3 import IntegrityError
-
 from fastapi import Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session, session
-from database import User, Spot, get_db
-from auth import get_current_user
+from .models import User, Spot
+from .engine import get_db
+from .auth import get_current_user
 
 router = APIRouter()
 
@@ -22,6 +22,7 @@ def create_spot(db: Session = Depends(get_db), current_user: User = Depends(get_
             status_code=403,
             detail='Только администратор может добавлять столы!'
         )
+
     # проверка на добавление уникальности стола
     try:
         new_spot = Spot(
@@ -52,7 +53,7 @@ def delete_spot(spot_id: int, db: Session = Depends(get_db), current_user: User 
             detail='Только администратор может удалять столы!'
         )
 
-    # del_spot = db.query(Spot).filter(Spot.id == spot_id).first() # перенес наверх
+
     db.delete(del_spot)
     db.commit()
     return {'Message': 'Стол успешно удален!'}
