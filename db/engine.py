@@ -24,3 +24,66 @@ def db_seed():
         )
         session.add(person_one)
         session.commit()
+
+
+def is_table(table):
+    if table:
+        return table
+    else:
+        return
+
+def simple_select():
+
+    session = Session(engine)
+
+    query = select(User)
+    result = session.execute(query)
+    users = result.scalars().all()
+
+    spots = session.execute(select(Spot)).scalars().all()
+    bookings = session.execute(select(Booking)).scalars().all()
+
+    if is_table(users):
+        for user in users:
+            print(user.id)
+            print(user.login)
+            print(user.email)
+            print(user.hash_password)
+            print(user.role)
+            print()
+    else: 
+        print('table not found')
+    
+    if is_table(spots):
+        for spot in spots:
+            print(spot.id)
+            print(spot.number)
+            print(spot.desciption)
+            print(spot.is_active)
+            print()
+    else:
+        print('table not found')
+
+    if is_table(bookings):
+        for book in bookings:
+            print(book.id)
+            print(book.user_id)
+            print(book.sport_id)
+            print(book.start_time)
+            print(book.end_time)
+            print(book.user)
+            print(book.spot)
+            print()
+    else:
+        print('table not found')
+
+def add_spots():
+    [
+        'Место рядом с окном',
+        'Место рядом под кондиционером',
+        'Место рядом с кофейным деревом',
+        'Место рядом с библиотекой',
+        'Место рядом с автоматом с газировкой'
+    ]
+    
+
