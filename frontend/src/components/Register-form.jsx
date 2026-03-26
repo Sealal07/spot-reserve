@@ -20,9 +20,10 @@ function RegisterForm() {
 
         try {
             const registerData = {
-                username: username,
+                login: username, // бэкенд ждет 'login', а не 'username'
                 email: email,
-                password: password
+                password: password,
+                role: "user"     // Добавляем роль явно
             };
 
             const response = await authRegister(registerData);

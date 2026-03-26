@@ -10,7 +10,7 @@ env/
 *.db
 *.sqlite3
 
-.env
+backend/.env
 .env.local
 
 node_modules/
