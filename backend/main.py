@@ -4,7 +4,7 @@ from app import bookings, profile, routes, spot_api
 from app.engine import create_tables
 
 # Создаем таблицы при запуске
-create_tables()
+# create_tables()
 
 app = FastAPI(title='Spot Reserve API', redirect_slashes=False)
 

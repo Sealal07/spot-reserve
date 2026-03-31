@@ -1,8 +1,11 @@
 #!/bin/sh
-
 set -e
 
 echo "Waiting for database..."
+
+echo "Applying migrations..."
+alembic upgrade head
+
 
 python -m app.seed_db
 
