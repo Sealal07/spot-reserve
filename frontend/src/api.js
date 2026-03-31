@@ -1,6 +1,4 @@
-const API_URL = "http://127.0.0.1:8000/";
-const API_URL_BOOKING = `${API_URL}bookings/`;
-
+const API_URL = "http://127.0.0.1:8000"; // Убрала слэш в конце
 const getHeaders = () => {
     const token = localStorage.getItem("token");
     return {
@@ -9,13 +7,15 @@ const getHeaders = () => {
     };
 };
 
+//  Столы
 export const getSpots = async () => {
-    const response = await fetch(`${API_URL}spots/`);
+    const response = await fetch(`${API_URL}/spots`);
     return response.json();
 };
 
+
 export const addSpot = async (spotData) => {
-    const response = await fetch(`${API_URL}spots/`, {
+    const response = await fetch(`${API_URL}/spots`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(spotData),
@@ -24,29 +24,29 @@ export const addSpot = async (spotData) => {
 };
 
 export const deleteSpot = async (id) => {
-    await fetch(`${API_URL}spots/${id}/`, {
+    await fetch(`${API_URL}/spots/${id}`, {
         method: "DELETE",
         headers: getHeaders()
     });
 };
 
-// исправлено: регистрация теперь отправляет роль по умолчанию, как ждет бэкенд
+//  Регистрация
 export const authRegister = async (authData) => {
-    const response = await fetch(`${API_URL}auth/register`, {
+    const response = await fetch(`${API_URL}/auth/register`, { //  один четкий /
         method: "POST",
-        headers: { "Content-Type": "application/json" }, 
-        body: JSON.stringify({ ...authData, role: "user" }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(authData),
     });
     return response.json();
 };
 
-// исправлено: передаем данные в формате Form Data для FastAPI OAuth2
+//   Авторизация
 export const authToken = async (authData) => {
     const formData = new URLSearchParams();
-    formData.append('username', authData.username); // в FastAPI username это email
+    formData.append('username', authData.username);
     formData.append('password', authData.password);
 
-    const response = await fetch(`${API_URL}auth/token`, {
+    const response = await fetch(`${API_URL}/auth/token`, { //  один  /
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: formData,
@@ -54,8 +54,18 @@ export const authToken = async (authData) => {
     return response.json();
 };
 
+
+
+//  Бронирования
+export const getMyBookings = async () => {
+    const response = await fetch(`${API_URL}/bookings/my`, { //  /bookings/my
+        headers: getHeaders()
+    });
+    return response.json();
+};
+
 export const createBooking = async (bookingData) => {
-    const response = await fetch(`${API_URL_BOOKING}`, {
+    const response = await fetch(`${API_URL}/bookings/`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(bookingData),
@@ -63,30 +73,23 @@ export const createBooking = async (bookingData) => {
     return response.json();
 };
 
-export const getMyBookings = async () => {
-    const response = await fetch(`${API_URL_BOOKING}my`, { // убран лишний слеш для соответствия роуту
-        headers: getHeaders()
-    });
-    return response.json();
-};
-
 export const getBookings = async () => {
-    const response = await fetch(`${API_URL_BOOKING}`, {
+    const response = await fetch(`${API_URL}/bookings/`, {
         headers: getHeaders()
     });
     return response.json();
 };
 
 export const deleteBookings = async (id) => {
-    await fetch(`${API_URL_BOOKING}${id}`, {
+    await fetch(`${API_URL}/bookings/${id}`, {
         method: "DELETE",
         headers: getHeaders()
     });
 };
 
 export const getUsers = async () => {
-    const response = await fetch(`${API_URL}users/me`, {
+    const response = await fetch(`${API_URL}/users/me`, {
         headers: getHeaders()
     });
     return response.json();
-}
+};

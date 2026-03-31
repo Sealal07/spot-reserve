@@ -1,7 +1,7 @@
 from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pydantic import BaseModel
 from .models import User, Spot, Booking
 from .engine import  get_db
@@ -32,65 +32,74 @@ class BookingResponse(BaseModel):
 def create_booking(
         booking_data: BookingCreate,
         db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)):
-    """создание брони с проверкой доступности по времени"""
-    time_now = datetime.now()
-    start_time = datetime.strptime(booking_data['start_time'], '%Y-%m-%d %H:%M')
-    end_time = datetime.strptime(booking_data['end_time'], '%Y-%m-%d %H:%M')
-    total_seconds_booking = (end_time - start_time).total_seconds()  # получаем количество секунд бронирования
-    max_hour_booking = 60 * 60 * 12  # это максимальное время бронирование в секундах!!!!
+        current_user: User = Depends(get_current_user)
+):
+    now = datetime.now()
+    start_time = booking_data.start_time.replace(tzinfo=None)
+    end_time = booking_data.end_time.replace(tzinfo=None)
+    spot_id = booking_data.spot_id
 
+    # Базовая валидация интервала
+    if start_time >= end_time:
+        raise HTTPException(
+            status_code=400,
+            detail="Время начала не может быть позже или равно времени окончания"
+        )
+
+    if start_time < now:
+        raise HTTPException(
+            status_code=400,
+            detail="Нельзя забронировать место в прошлом"
+        )
+
+    # Проверка длительности (макс 12 часов)
+    duration_seconds = (end_time - start_time).total_seconds()
+    max_duration = 12 * 3600  # 12 часов в секундах
+    if duration_seconds > max_duration:
+        raise HTTPException(
+            status_code=400,
+            detail="Максимальное время бронирования — 12 часов"
+        )
+
+    # Ищем бронирования для этого же стола, которые пересекаются с нашим временем
+    overlapping_booking = db.query(Booking).filter(
+        Booking.spot_id == spot_id,
+        and_(
+            start_time < Booking.end_time,  # Наше начало раньше чьего-то конца
+            end_time > Booking.start_time  # Наш конец позже чьего-то начала
+        )
+    ).first()
+
+    if overlapping_booking:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Этот стол уже забронирован на интервал с {overlapping_booking.start_time.strftime('%H:%M')} до {overlapping_booking.end_time.strftime('%H:%M')}"
+        )
+
+    # Создание записи в БД
     try:
-        if start_time < time_now:
-            raise HTTPException(status_code=400,
-                                detail='Время\дата начала бронирования не может быть меньше текущего времени\даты!')
-        elif end_time <= start_time:
-            raise HTTPException(status_code=400,
-                                detail='Время\дата завершения бронирования должна быть больше чем время\дата начала бронирования!')
-        elif total_seconds_booking > max_hour_booking:
-            raise HTTPException(status_code=400, detail='Время бронирования не может превышать 12 часов!')
-        else:
-
-            # проверяем, существует ли стол и активен ли он
-            spot = db.query(Spot).filter(Spot.id == booking_data.spot_id, Spot.is_active == True).first()
-            if not spot:
-                raise HTTPException(status_code=404, detail="Стол не найден или деактивирован")
-
-            # проверка на пересечение временных интервалов
-            # Формула: (RequestStart < ExistingEnd) AND (RequestEnd > ExistingStart)
-            overlap = db.query(Booking).filter(
-                Booking.spot_id == booking_data.spot_id,
-                and_(
-                    booking_data.start_time < Booking.end_time,
-                    booking_data.end_time > Booking.start_time
-                )
-            ).first()
-
-            if overlap:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Этот стол уже забронирован на выбранное время"
-                )
-
-            # создание записи
-            new_booking = Booking(
-                user_id=current_user.id,
-                spot_id=booking_data.spot_id,
-                start_time=booking_data.start_time,
-                end_time=booking_data.end_time
-            )
+        new_booking = Booking(
+            user_id=current_user.id,
+            spot_id=spot_id,
+            start_time=start_time,
+            end_time=end_time
+        )
         db.add(new_booking)
         db.commit()
         db.refresh(new_booking)
         return new_booking
 
-    except HTTPException as e:
-        return {'Message': f'Error: {e}'}
-
+    except Exception as e:
+        db.rollback()
+        print(f"Ошибка при сохранении в БД: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Внутренняя ошибка сервера при создании брони"
+        )
 
 
 @router.get('/my')
-def get_my_bookings(user_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def get_my_bookings(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     '''Список своих текущих и прошедших бронирований'''
     my_reservations = db.query(Booking).filter(Booking.user_id == current_user.id).all()
     if current_user:
@@ -102,7 +111,7 @@ def get_my_bookings(user_id: int, db: Session = Depends(get_db), current_user: U
 
     return my_reservations
 
-@router.get("/")
+@router.get("/", response_model=list[BookingResponse])
 def get_all_bookings_for_admin(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     '''Получение всех броней админом'''
     if current_user.role != 'admin':

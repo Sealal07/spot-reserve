@@ -35,11 +35,14 @@ def create_access_token(data: dict):
     to_encode.update({'exp': expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
+
+# auth.py
+
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    '''Получение текущего пользователя'''
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail='Could not validate credentials',
+        headers={'WWW-Authenticate': 'Bearer'},
     )
     try:
         pay_load = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -48,8 +51,11 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    # возвращаем полноценный объект пользователя
+
+    # Ищем пользователя в базе по email, который мы достали из sub
+    from .models import User  # Импорт внутри, чтобы избежать circular import
     user = db.query(User).filter(User.email == email).first()
+
     if user is None:
         raise credentials_exception
     return user

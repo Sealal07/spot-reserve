@@ -14,11 +14,17 @@ function CalendarPage() {
         try {
             setLoading(true);
             const data = await getSpots();
-            setSpots(data);
-            setError(null);
+            // проверяем, что пришел массив
+            if (Array.isArray(data)) {
+                setSpots(data);
+                setError(null);
+            } else {
+                console.error("Сервер вернул не массив:", data);
+                setSpots([]);
+                setError("Ошибка формата данных от сервера");
+            }
         } catch (err) {
-            console.error("Ошибка при загрузке столов:", err);
-            setError("Не удалось загрузить список столов. Попробуйте позже.");
+            setError("Не удалось загрузить список столов.");
         } finally {
             setLoading(false);
         }
@@ -48,7 +54,7 @@ function CalendarPage() {
                     availableSpots.length > 0 ? (
                         <div className="spots-grid">
                             {availableSpots.map(spot => (
-                                <TableCard key={spot.id} spot={spot} />
+                                <TableCard key={spot.id} spot={spot}  selectedDate={selectedDate}/>
                             ))}
                         </div>
                     ) : (

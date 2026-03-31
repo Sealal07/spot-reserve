@@ -6,7 +6,7 @@ from app.engine import create_tables
 # Создаем таблицы при запуске
 create_tables()
 
-app = FastAPI(title='Spot Reserve API')
+app = FastAPI(title='Spot Reserve API', redirect_slashes=False)
 
 app.add_middleware(
     CORSMiddleware,
@@ -14,8 +14,9 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
-
-app.include_router(bookings.router)
+# порядок подключения имеет значение
+app.include_router(profile.router)
 app.include_router(spot_api.router)
 app.include_router(routes.router)
-app.include_router(profile.router)
+app.include_router(bookings.router)
+

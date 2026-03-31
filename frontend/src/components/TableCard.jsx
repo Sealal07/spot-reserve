@@ -1,21 +1,34 @@
-import React from 'react';
-import { CButton, CCard, CCardBody, CCardText, CCardTitle } from '@coreui/react';
+import React, { useState } from 'react';
+import { CButton, CCard, CCardBody, CCardText, CCardTitle, CFormInput } from '@coreui/react';
 import { createBooking } from '../api';
 
-export const TableCard = ({ spot }) => {
+export const TableCard = ({ spot, selectedDate }) => {
+    const [startTime, setStartTime] = useState("09:00");
+    const [endTime, setEndTime] = useState("18:00");
+
     const handleBook = async () => {
-        const startTime = new Date();
-        const endTime = new Date();
-        endTime.setHours(startTime.getHours() + 2);
+        // Склеиваем выбранную дату из календаря и время из инпутов
+        const start = new Date(selectedDate);
+        const [startH, startM] = startTime.split(':');
+        start.setHours(startH, startM, 0);
+
+        const end = new Date(selectedDate);
+        const [endH, endM] = endTime.split(':');
+        end.setHours(endH, endM, 0);
 
         try {
             const result = await createBooking({
                 spot_id: spot.id,
-                start_time: startTime.toISOString(),
-                end_time: endTime.toISOString()
+                start_time: start.toISOString(),
+                end_time: end.toISOString()
             });
-            alert("Успешно забронировано!");
-            window.location.reload();
+
+            if (result.id) {
+                alert("Успешно забронировано!");
+                window.location.reload();
+            } else {
+                alert("Ошибка: " + (result.detail || "Место уже занято"));
+            }
         } catch (err) {
             alert("Ошибка при бронировании");
         }
@@ -26,6 +39,14 @@ export const TableCard = ({ spot }) => {
             <CCardBody>
                 <CCardTitle>Стол №{spot.number}</CCardTitle>
                 <CCardText>{spot.description}</CCardText>
+
+                <div className="mb-3">
+                    <label>Начало:</label>
+                    <CFormInput type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+                    <label>Конец:</label>
+                    <CFormInput type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+                </div>
+
                 <CButton
                     color={spot.is_active ? "primary" : "secondary"}
                     disabled={!spot.is_active}

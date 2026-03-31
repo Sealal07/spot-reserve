@@ -39,16 +39,26 @@ def user_register(user: UserCreate, db: Session = Depends(get_db)):
     return {'message': 'Пользователь создан!'}
 
 
+# spot_api.py
+
 @router.post('/auth/token')
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    '''Авторизация пользователя'''
+    # ищем пользователя по логину ИЛИ email
     user = db.query(User).filter(
         (User.email == form_data.username) | (User.login == form_data.username)
     ).first()
+
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=400,
-            detail='Неверный пользователь или пароль!'
+            detail='Неверный логин или пароль'
         )
-    access_token = create_access_token(data={'sub': user.login})
-    return {'access_token': access_token, 'token_type': 'bearer'}
+
+    # Создаем токен, записывая email в поле sub
+    access_token = create_access_token(data={'sub': user.email})
+
+    # ОБЯЗАТЕЛЬНО возвращаем token_type
+    return {
+        'access_token': access_token,
+        'token_type': 'bearer'
+    }

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { authToken, getUsers } from "../api";
 import { useNavigate } from "react-router-dom";
 
-function AuthForm() {
+function AuthForm({ onLogin }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
@@ -10,13 +10,18 @@ function AuthForm() {
     const handleAuth = async () => {
         try {
             const userResponse = await getUsers();
-            // исправлено: бэкенд возвращает объект с ролью 
-            if (userResponse && userResponse.role) {
-                localStorage.setItem("role", userResponse.role);
-            } else {
-                localStorage.setItem("role", "user"); // fallback
-            }
-            navigate("/my"); // перенаправляем в ЛК после успеха
+            console.log("RESPONSE FROM SERVER:", userResponse); //  значение в поле role?
+            const role = userResponse?.role || "user";
+
+            localStorage.setItem("role", role);
+
+            // Обновляем состояние в App.jsx
+            onLogin({
+                token: localStorage.getItem("token"),
+                role: role
+            });
+
+            navigate("/my");
         } catch (e) {
             console.error("Ошибка получения профиля", e);
         }

@@ -5,108 +5,86 @@ export const AdminDashboard = () => {
     const [allBookings, setAllBookings] = useState([]);
     const [allSpots, setAllSpots] = useState([]);
     const [loading, setLoading] = useState(true);
-    // добавление стола
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const fetchSpot = async () => {
-            try {
-                const [message, spotValue] = await addSpot();
-                setAllSpots();
-                console.log("Стол успешно создан", spotValue);
 
-            }
-            catch (error) {
-                console.error(error) 
-            }
-
-                }
-        console.log("Форма обработана!");
-
+    const fetchData = async () => {
+        try {
+            const [bookingsData, spotsData] = await Promise.all([
+                getBookings(),
+                getSpots()
+            ]);
+            setAllBookings(Array.isArray(bookingsData) ? bookingsData : []);
+            setAllSpots(Array.isArray(spotsData) ? spotsData : []);
+        } catch (error) {
+            console.error("Ошибка загрузки данных админа:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const deleteBookingSubmit = (id) => {
-        const fetchDelete = async () => {
-            try {
-
-                const [message, bookingValue] = await  deleteSpot();
-                setAllSpots();
-                console.log("Стол успешно удален", bookingValue);
-
-            }
-            catch (error){
-                console.error(error)
-            }
-        }
-        
-    }
-    const handleConfirm = (id) => {
-        const choice = confirm("Вы уверены, что хотите удалить?")
-        if (choice) {
-            deleteBookingSubmit(id)
-        }
-        else {
-            return
-        }
-    }
-
-    // исправлено: используем useEffect для загрузки данных при монтировании
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [bookingsData, spotsData] = await Promise.all([
-                    getBookings(),
-                    getSpots()
-                ]);
-                setAllBookings(Array.isArray(bookingsData) ? bookingsData : []);
-                setAllSpots(Array.isArray(spotsData) ? spotsData : []);
-            } catch (error) {
-                console.error("Ошибка загрузки данных админа:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchData();
     }, []);
 
-    if (loading) return <p>Загрузка данных...</p>;
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const spotData = {
+            number: parseInt(formData.get('spotNumber')),
+            description: formData.get('description')
+        };
+
+        try {
+            await addSpot(spotData);
+            alert("Стол добавлен");
+            window.location.reload();
+        } catch (error) {
+            console.error("Ошибка при добавлении стола:", error);
+        }
+    };
+
+    const handleDeleteSpot = async (id) => {
+        if (confirm("Удалить этот стол?")) {
+            try {
+                await deleteSpot(id);
+                fetchData();
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    };
+
+    if (loading) return <p>Загрузка...</p>;
 
     return (
         <div style={{ padding: '20px' }}>
             <h2>Панель администратора</h2>
-            
+
             <h3>Все бронирования</h3>
-            <div className="bookings-list">
+            <div>
                 {allBookings.length > 0 ? allBookings.map(book => (
-                    <div key={book.id} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
-                        {/* исправлено: берем данные из объекта бронирования */}
-                        <h4>Бронь №{book.id}</h4>
-                        <p>Стол: {book.spot_id}</p>
-                        <p>Период: {new Date(book.start_time).toLocaleString()} - {new Date(book.end_time).toLocaleString()}</p>
+                    <div key={book.id} style={{ border: '1px solid #ccc', padding: '10px', margin: '5px' }}>
+                        <p>Бронь №{book.id} | Стол ID: {book.spot_id}</p>
+                        <p>{new Date(book.start_time).toLocaleString()} - {new Date(book.end_time).toLocaleString()}</p>
                     </div>
                 )) : <p>Бронирований нет</p>}
             </div>
 
             <h3>Все столы</h3>
-            <div className="spots-list">
+            <div>
                 {allSpots.map(spot => (
-                    <div key={spot.id}>
-                        Стол №{spot.number} — {spot.description}
-                        <div onClick={(e) => handleConfirm(id)}>🗑️</div>
+                    <div key={spot.id} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <span>Стол №{spot.number} — {spot.description}</span>
+                        <button onClick={() => handleDeleteSpot(spot.id)}>🗑️</button>
                     </div>
                 ))}
             </div>
 
-{/* Форма добавить новый стол */}
-
+            <h3>Добавить новый стол</h3>
             <form onSubmit={handleSubmit}>
-
-                <input type="number" name='spotNumber' placeholder='Номер столика' />
-                <input type="text" name='description' placeholder='Описание столика'/>
-                <button type='submit'>Добавить столик</button>
-
+                <input type="number" name='spotNumber' placeholder='Номер столика' required />
+                <input type="text" name='description' placeholder='Описание столика' required />
+                <button type='submit'>Добавить</button>
             </form>
-
-
         </div>
     );
 };
